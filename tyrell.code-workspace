@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "../seneca/seneca"
+		},
+		{
+			"path": "../citrus"
+		}
+	],
+	"settings": {}
+}
