@@ -5,31 +5,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 function distributeCards($numPeople) {
-    if (!is_int($numPeople) || $numPeople <= 0) {
-        return "Input value does not exist or value is invalid\n";
-    }
-
-    $suits = ['S', 'H', 'D', 'C'];
-    $values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'X', 'J', 'Q', 'K'];
-    $deck = [];
-    
-    // Create the deck
-    foreach ($suits as $suit) {
-        foreach ($values as $value) {
-            $deck[] = "$suit-$value";
+    try {
+        if (!is_int($numPeople) || $numPeople <= 0) {
+            throw new Exception("Input value does not exist or value is invalid\n");
         }
+        
+        $suits = ['S', 'H', 'D', 'C'];
+        $values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'X', 'J', 'Q', 'K'];
+        $deck = [];
+        
+        // Create the deck
+        foreach ($suits as $suit) {
+            foreach ($values as $value) {
+                $deck[] = "$suit-$value";
+            }
+        }
+        
+        // Shuffle the deck
+        if (!shuffle($deck)) {
+            throw new Exception("Irregularity occurred: Unable to shuffle deck\n");
+        }
+        
+        // Distribute cards
+        $result = array_fill(0, $numPeople, []);
+        foreach ($deck as $index => $card) {
+            $result[$index % $numPeople][] = $card;
+        }
+        
+        return implode("\n", array_map(fn($hand) => implode(",", $hand), $result)) . "\n";
+    } catch (Exception $e) {
+        return "Error: " . $e->getMessage();
     }
-
-    // Shuffle the deck
-    shuffle($deck);
-
-    // Distribute cards
-    $result = array_fill(0, $numPeople, []);
-    foreach ($deck as $index => $card) {
-        $result[$index % $numPeople][] = $card;
-    }
-    
-    return implode("\n", array_map(fn($hand) => implode(",", $hand), $result)) . "\n";
 }
 ?>
 
